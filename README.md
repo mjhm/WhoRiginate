@@ -5,6 +5,7 @@ This is my test project for building a "React Native" app.  It scrapes the http:
 ### Web App Development Feel for Mobile App Development
 
 I started this project with practically no mobile app development experience, so I have a limited perspective for comparison with the normal mobile development experience. However this did feel a lot like the pace and style of Web development.
+
 1. Pulling in existing javascript modules (*cheerio* for HTML parsing, *fuzzy* for the search engine) was almost easy.
 1. Debugging works fine from the Chrome debugger with all the usual variable introspection and breakpoint tools.
 1. The *React* Chrome DevTools tab also hooks into Mobile app, which gives a nice view of the component hierarchy.
