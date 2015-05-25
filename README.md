@@ -2,7 +2,13 @@
 
 This is my test project for building a "React Native" app.  It scrapes the http://www.originate.com/people page for info about all the Originate people, and provides the user with a fuzzy search TextBox to display the info about a given person.
 
-I started this project with practically no mobile app development experience, so I have a limitted perspective for comparison with the normal mobile development experience. However this did feel a lot like the pace and style of Web development.
+### Web App Development Feel for Mobile App Development
+
+I started this project with practically no mobile app development experience, so I have a limited perspective for comparison with the normal mobile development experience. However this did feel a lot like the pace and style of Web development.
+1. Pulling in existing javascript modules (*cheerio* for HTML parsing, *fuzzy* for the search engine) was almost easy.
+1. Debugging works fine from the Chrome debugger with all the usual variable introspection and breakpoint tools.
+1. The *React* Chrome DevTools tab also hooks into Mobile app, which gives a nice view of the component hierarchy.
+1. Of course everything having to do with HTML/CSS in the Chrome DevTools is useless (as is the *Network* tab). Having equivalent functionality in the DevTools for Flexbox styling would be a welcome addition.
 
 These two articles also review the React Native development process.
 * http://herman.asia/building-a-flashcard-app-with-react-native
