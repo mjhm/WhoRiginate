@@ -17,17 +17,24 @@ var {
   AppRegistry
 } = React;
 
+// This is used by people without an image.
+var defaultImage1 = ['https://originate-v3-prod.s3.amazonaws.com/sites/',
+  '53854785dc60d94b96000002/theme/images/people-default.jpg'].join('');
+
+// This is used as the image when the search doesn't match.
+var defaultImage2 = ['http://www.originate.com/images/dynamic/',
+    'W1siZnUiLCJodHRwczovL29yaWdpbmF0ZS12My1wcm9kLnMzLmFtYXpvbmF3cy5jb20',
+    'vc2l0ZXMvNTM4NTQ3ODVkYzYwZDk0Yjk2MDAwMDAyL3BhZ2VzLzUzODc5YWY4NzA3OW',
+    'RiMDY3YjAwMDBhOS9maWxlcy9QZW9wbGVfSGVhZGVyNC5qcGc%2FMTQyMzc2NjY0MyJ',
+    'dLFsicCIsInRodW1iIiwiMTUwMHgxNTAwXHUwMDNFIl1d',
+    '/People_Header4.jpg?sha=227eb0ca59820e48'].join('');
+
 var defaultPerson = {
   name: '',
   title: '',
   location: '',
   blurb: '',
-  image: ['http://www.originate.com/images/dynamic/',
-    'W1siZnUiLCJodHRwczovL29yaWdpbmF0ZS12My1wcm9kLnMzLmFtYXpvbmF3cy5jb20',
-    'vc2l0ZXMvNTM4NTQ3ODVkYzYwZDk0Yjk2MDAwMDAyL3BhZ2VzLzUzODc5YWY4NzA3OW',
-    'RiMDY3YjAwMDBhOS9maWxlcy9QZW9wbGVfSGVhZGVyNC5qcGc%2FMTQyMzc2NjY0MyJ',
-    'dLFsicCIsInRodW1iIiwiMTUwMHgxNTAwXHUwMDNFIl1d',
-    '/People_Header4.jpg?sha=227eb0ca59820e48'].join(''),
+  image: defaultImage2,
   concat: ''
 };
 
@@ -45,7 +52,7 @@ var WhoRiginate = React.createClass({
       var name = $(this).find('.details .name').text().trim();
       var titleLocation = $(this).find('.details .title').text().trim();
       var blurb = $(this).find('.details .blurb').text().trim();
-      var image = ($(this).css('background-image') || '').slice(4,-1);
+      var image = ($(this).css('background-image') || '').slice(4, -1);
 
       var title = titleLocation.replace(/\s+\-\s+.*$/, '');
       var location = titleLocation.replace(/^.*\s+\-\s+/, '');
@@ -55,16 +62,18 @@ var WhoRiginate = React.createClass({
         title: title,
         location: location,
         blurb: blurb,
-        image: image,
-        concat: [name,location,title,blurb].join('\n')
+        image: image || defaultImage1,
+        concat: [name, location, title, blurb].join('\n')
       });
     });
-    console.log('DONE SCRAPING');
     processPeople(null, people);
   },
 
   processPeople: function (err, people) {
-    console.log('PROCESSING');
+    if (err) {
+      console.log(err);
+      return;
+    }
     this.people = people;
     this.nameList = _.pluck(people, 'name');
     this.locationList = _(people).pluck('location').unique().value();

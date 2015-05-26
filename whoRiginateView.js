@@ -7,6 +7,8 @@
 
 var React = require('react-native');
 var _ = require('lodash');
+var Carousel = require('./carousel');
+// ^ WIP Not hooked up.
 // jshint -W079
 var {
   Image,
@@ -23,22 +25,17 @@ var {
 var styles = StyleSheet.create({
   container: {
     flex: 1,
+    flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#1D1D1D',
+    backgroundColor: '#1D1D1D'
   },
-  title: {
+  headline: {
     fontSize: 40,
     color: '#eee',
     fontFamily: 'Georgia',
     textAlign: 'center',
-    margin: 10,
-    marginBottom: 20
-  },
-  info: {
-    textAlign: 'center',
-    color: '#ddd',
-    marginBottom: 5,
+    margin: 40
   },
   searchInput: {
     height: 40,
@@ -46,17 +43,29 @@ var styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 5,
     color: '#eee',
-    margin: 10,
+    margin: 20,
     padding: 10
   },
+  card: {
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'center'
+  },
+  info: {
+    textAlign: 'center',
+    color: '#ddd',
+    margin: 10,
+    marginTop: 5,
+    marginBottom: 5
+  },
   portrait: {
-    backgroundColor: '#0ff',
-    borderColor: '#f0f',
-    tintColor: '#ff0',
+    backgroundColor: '#000',
+    borderColor: '#000',
+    tintColor: '#000',
     opacity: 1,
     width: 300,
-    height: 300,
-  },
+    height: 300
+  }
 });
 
 
@@ -73,29 +82,31 @@ var WhoRiginateView = React.createClass({
     var who = this.props.currentPerson;
     return (
       <View style={styles.container}>
-        <Text style={styles.title}>
+        <Text style={styles.headline}>
           WhoRiginate
-        </Text>
-        <Text style={styles.info}>
-         {who.name}
-        </Text>
-        <Text style={styles.info}>
-         {who.name ? who.location + ' - ' + who.title : ' '}
-        </Text>
-        <Text style={styles.info}>
-         {who.blurb}
         </Text>
         <TextInput
           style={styles.searchInput}
           editable={!this.props.isScraping}
-          placeholder='Search by name'
+          placeholder={this.props.isScraping ? '' : 'Search by name'}
           placeholderTextColor='#777'
           onChangeText={_.debounce(this.props.searchChangeHandler, 400)}
         />
-        <Image
-         source={{uri:who.image}}
-         style={styles.portrait}
-       />
+        <View style={styles.card}>
+          <Text style={styles.info}>
+           {who.name}
+          </Text>
+          <Text style={styles.info}>
+           {who.name ? who.location + ' - ' + who.title : ' '}
+          </Text>
+          <Text style={styles.info}>
+           {who.blurb}
+          </Text>
+          <Image
+           source={{uri: who.image}}
+           style={styles.portrait}
+         />
+        </View>
       </View>
     );
   }
