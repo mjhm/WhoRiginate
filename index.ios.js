@@ -14,8 +14,12 @@ var fuzzy = require('fuzzy');
 var WhoRiginateView = require('./whoRiginateView');
 
 var {
-  AppRegistry
+  AppRegistry,
+  PixelRatio
 } = React;
+
+console.log('pixelRatio', PixelRatio.get());
+
 
 // This is used by people without an image.
 var defaultImage1 = ['https://originate-v3-prod.s3.amazonaws.com/sites/',

@@ -8,7 +8,10 @@
 var React = require('react-native');
 var _ = require('lodash');
 var Carousel = require('./carousel');
-// ^ WIP Not hooked up.
+  // See https://github.com/pjjanak/react-native-viewport
+var Viewport = require('react-native-viewport');
+
+
 // jshint -W079
 var {
   Image,
@@ -79,6 +82,9 @@ var WhoRiginateView = React.createClass({
   },
 
   render: function() {
+    Viewport.getDimensions(function (dimensions) {
+      console.log('Viewport.getDimesions', dimensions);
+    });
     var who = this.props.currentPerson;
     return (
       <View style={styles.container}>
@@ -91,22 +97,41 @@ var WhoRiginateView = React.createClass({
           placeholder={this.props.isScraping ? '' : 'Search by name'}
           placeholderTextColor='#777'
           onChangeText={_.debounce(this.props.searchChangeHandler, 400)}
+          controlled={true}
+
         />
-        <View style={styles.card}>
-          <Text style={styles.info}>
-           {who.name}
-          </Text>
-          <Text style={styles.info}>
-           {who.name ? who.location + ' - ' + who.title : ' '}
-          </Text>
-          <Text style={styles.info}>
-           {who.blurb}
-          </Text>
-          <Image
-           source={{uri: who.image}}
-           style={styles.portrait}
-         />
-        </View>
+      <Carousel >
+          <View style={styles.card}>
+            <Text style={styles.info}>
+             {who.name}
+            </Text>
+            <Text style={styles.info}>
+             {who.name ? who.location + ' - ' + who.title : ' '}
+            </Text>
+            <Text style={styles.info}>
+             {who.blurb}
+            </Text>
+            <Image
+             source={{uri: who.image}}
+             style={styles.portrait}
+            />
+          </View>
+          <View style={styles.card}>
+            <Text style={styles.info}>
+             {who.name}
+            </Text>
+            <Text style={styles.info}>
+             {who.name ? who.location + ' - ' + who.title : ' '}
+            </Text>
+            <Text style={styles.info}>
+             {who.blurb}
+            </Text>
+            <Image
+             source={{uri: who.image}}
+             style={styles.portrait}
+            />
+          </View>
+        </Carousel>
       </View>
     );
   }
