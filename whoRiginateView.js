@@ -8,9 +8,6 @@
 var React = require('react-native');
 var _ = require('lodash');
 var Carousel = require('./carousel');
-  // See https://github.com/pjjanak/react-native-viewport
-var Viewport = require('react-native-viewport');
-
 
 // jshint -W079
 var {
@@ -31,43 +28,56 @@ var styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#1D1D1D'
+    backgroundColor: '#1D1D1D',
+    borderWidth: 2,
+    borderColor: '#ff0',
+    overflow: 'hidden',
+    padding: 0
   },
   headline: {
-    fontSize: 40,
+    fontSize: 30,
     color: '#eee',
     fontFamily: 'Georgia',
     textAlign: 'center',
-    margin: 40
+    marginTop: 30,
+    marginBottom: 5
   },
   searchInput: {
-    height: 40,
+    height: 30,
     borderColor: 'gray',
     borderWidth: 1,
     borderRadius: 5,
     color: '#eee',
-    margin: 20,
-    padding: 10
+    margin: 10,
+    padding: 7
+  },
+  carousel: {
+    flex: 1, alignItems: 'flex-start', overflow: 'hidden',
+    backgroundColor: '#b00',
+    borderWidth: 2,
+    borderColor: '#0bb'
   },
   card: {
     flex: 1,
     flexDirection: 'column',
-    alignItems: 'center'
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    borderWidth: 2,
+    borderColor: '#804'
   },
   info: {
     textAlign: 'center',
     color: '#ddd',
+    fontSize: 12,
     margin: 10,
-    marginTop: 5,
-    marginBottom: 5
+    marginTop: 0,
+    marginBottom: 0
   },
   portrait: {
     backgroundColor: '#000',
     borderColor: '#000',
     tintColor: '#000',
-    opacity: 1,
-    width: 300,
-    height: 300
+    opacity: 1
   }
 });
 
@@ -82,12 +92,11 @@ var WhoRiginateView = React.createClass({
   },
 
   render: function() {
-    Viewport.getDimensions(function (dimensions) {
-      console.log('Viewport.getDimesions', dimensions);
-    });
     var who = this.props.currentPerson;
+    var cardWidth = this.props.width - 20;
+    var portraitSize = this.props.height -260;
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, {width: this.props.width}]}>
         <Text style={styles.headline}>
           WhoRiginate
         </Text>
@@ -98,40 +107,41 @@ var WhoRiginateView = React.createClass({
           placeholderTextColor='#777'
           onChangeText={_.debounce(this.props.searchChangeHandler, 400)}
           controlled={true}
-
         />
-      <Carousel >
-          <View style={styles.card}>
-            <Text style={styles.info}>
-             {who.name}
-            </Text>
-            <Text style={styles.info}>
-             {who.name ? who.location + ' - ' + who.title : ' '}
-            </Text>
-            <Text style={styles.info}>
-             {who.blurb}
-            </Text>
-            <Image
-             source={{uri: who.image}}
-             style={styles.portrait}
-            />
-          </View>
-          <View style={styles.card}>
-            <Text style={styles.info}>
-             {who.name}
-            </Text>
-            <Text style={styles.info}>
-             {who.name ? who.location + ' - ' + who.title : ' '}
-            </Text>
-            <Text style={styles.info}>
-             {who.blurb}
-            </Text>
-            <Image
-             source={{uri: who.image}}
-             style={styles.portrait}
-            />
-          </View>
-        </Carousel>
+      <View style={[styles.carousel, {width: cardWidth}]}>
+          <Carousel width={cardWidth}>
+            <View style={[styles.card, {width: cardWidth}]}>
+              <Text style={styles.info}>
+               {who.name}
+              </Text>
+              <Text style={styles.info}>
+               {who.name ? who.location + ' - ' + who.title : ' '}
+              </Text>
+              <Text style={styles.info}>
+               {who.blurb}
+              </Text>
+              <Image
+               source={{uri: who.image}}
+               style={[styles.portrait, {height: portraitSize, width: portraitSize}]}
+              />
+            </View>
+            <View style={[styles.card, {width: cardWidth}]}>
+              <Text style={styles.info}>
+               {who.name}
+              </Text>
+              <Text style={styles.info}>
+               {who.name ? who.location + ' - ' + who.title : ' '}
+              </Text>
+              <Text style={styles.info}>
+               {who.blurb}
+              </Text>
+              <Image
+               source={{uri: who.image}}
+               style={[styles.portrait, {height: portraitSize, width: portraitSize}]}
+              />
+            </View>
+          </Carousel>
+        </View>
       </View>
     );
   }

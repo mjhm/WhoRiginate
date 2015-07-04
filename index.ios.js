@@ -10,6 +10,7 @@ var cheerio = require('./node_modules/cheerio/lib/cheerio');
 // ^ short form: require('cheerio'); doesn't work with react-native's require.
 var _ = require('lodash');
 var fuzzy = require('fuzzy');
+var Dimensions = require('Dimensions');
 
 var WhoRiginateView = require('./whoRiginateView');
 
@@ -100,7 +101,11 @@ var WhoRiginate = React.createClass({
   },
 
   getInitialState: function () {
+    var dim = Dimensions.get('window');
+    console.log('Dimensions', dim);
     return {
+      width: dim.width,
+      height: dim.height,
       isScraping: true,
       searchStr: '',
       currentPerson: defaultPerson
@@ -108,6 +113,7 @@ var WhoRiginate = React.createClass({
   },
 
   componentWillMount: function () {
+    var self = this;
     fetch('http://www.originate.com/people')
     .then((response) => response.text())
     .catch((error) => {
