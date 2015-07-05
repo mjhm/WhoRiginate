@@ -10,11 +10,13 @@ var cheerio = require('./node_modules/cheerio/lib/cheerio');
 // ^ short form: require('cheerio'); doesn't work with react-native's require.
 var _ = require('lodash');
 var fuzzy = require('fuzzy');
+var Dimensions = require('Dimensions');
 
 var WhoRiginateView = require('./whoRiginateView');
 
 var {
-  AppRegistry
+  AppRegistry,
+  PixelRatio
 } = React;
 
 // This is used by people without an image.
@@ -47,7 +49,7 @@ var WhoRiginate = React.createClass({
 
   scrapePeople: function (pageText, processPeople) {
     var $ = cheerio.load(pageText);
-    var people = [defaultPerson];
+    var people = [];
     $('.person').each(function () {
       var name = $(this).find('.details .name').text().trim();
       var titleLocation = $(this).find('.details .title').text().trim();
@@ -76,34 +78,40 @@ var WhoRiginate = React.createClass({
     }
     this.people = people;
     this.nameList = _.pluck(people, 'name');
+    this.fuzzyIndex = people.map(function (p) {
+      return p.name;
+    });
     this.locationList = _(people).pluck('location').unique().value();
     this.titleList = _(people).pluck('title').unique().value();
     this.setState({isScraping: false});
-
-    console.log('nameList', this.nameList);
-    console.log('locationList', this.locationList);
-    console.log('titleList', this.titleList);
   },
 
   searchChangeHandler: function (text) {
     var options = { pre: '<', post: '>' };
-    var filterResult = fuzzy.filter(text, this.nameList, options);
-    console.log('results', filterResult);
+    var fuzzyResult = fuzzy.filter(text, this.fuzzyIndex, options);
+    var filteredPeople = fuzzyResult.map((fuzzyItem) => {
+      return this.people[fuzzyItem.index];
+    });
+
     this.setState({
       searchStr: text,
-      currentPerson: this.people[(filterResult[0] || {}).index || 0]
+      filteredPeople: filteredPeople
     });
   },
 
   getInitialState: function () {
+    var dim = Dimensions.get('window');
     return {
+      width: dim.width,
+      height: dim.height,
       isScraping: true,
       searchStr: '',
-      currentPerson: defaultPerson
+      filteredPeople: []
     };
   },
 
   componentWillMount: function () {
+    var self = this;
     fetch('http://www.originate.com/people')
     .then((response) => response.text())
     .catch((error) => {
@@ -116,7 +124,7 @@ var WhoRiginate = React.createClass({
   },
   render: function() {
     return (
-      <WhoRiginateView {...this.state}
+      <WhoRiginateView {...this.state} defaultPerson={defaultPerson}
         searchChangeHandler={this.searchChangeHandler}
       />
     );

@@ -34,7 +34,7 @@ var styles = StyleSheet.create({
     top: 20
   },
   pageIndicatorBottom: {
-    bottom: 20
+    bottom: 5
   }
 });
 
