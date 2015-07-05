@@ -29,8 +29,6 @@ var styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#1D1D1D',
-    borderWidth: 2,
-    borderColor: '#ff0',
     overflow: 'hidden',
     padding: 0
   },
@@ -53,17 +51,12 @@ var styles = StyleSheet.create({
   },
   carousel: {
     flex: 1, alignItems: 'flex-start', overflow: 'hidden',
-    backgroundColor: '#b00',
-    borderWidth: 2,
-    borderColor: '#0bb'
   },
   card: {
     flex: 1,
     flexDirection: 'column',
     alignItems: 'center',
-    justifyContent: 'space-around',
-    borderWidth: 2,
-    borderColor: '#804'
+    justifyContent: 'space-around'
   },
   info: {
     textAlign: 'center',
@@ -87,14 +80,15 @@ var WhoRiginateView = React.createClass({
   propTypes: {
     isScraping: PropTypes.bool.isRequired,
     searchStr: PropTypes.string.isRequired,
-    currentPerson: PropTypes.any.isRequired,
+    filteredPeople: PropTypes.any.isRequired,
     searchChangeHandler: PropTypes.func.isRequired
   },
 
   render: function() {
-    var who = this.props.currentPerson;
     var cardWidth = this.props.width - 20;
-    var portraitSize = this.props.height -260;
+    var portraitSize = Math.min(this.props.height - 260, cardWidth);
+    var whoList = (0 < this.props.filteredPeople.length && this.props.filteredPeople.length < 20) ?
+      this.props.filteredPeople : [this.props.defaultPerson];
     return (
       <View style={[styles.container, {width: this.props.width}]}>
         <Text style={styles.headline}>
@@ -108,38 +102,21 @@ var WhoRiginateView = React.createClass({
           onChangeText={_.debounce(this.props.searchChangeHandler, 400)}
           controlled={true}
         />
-      <View style={[styles.carousel, {width: cardWidth}]}>
-          <Carousel width={cardWidth}>
-            <View style={[styles.card, {width: cardWidth}]}>
-              <Text style={styles.info}>
-               {who.name}
-              </Text>
-              <Text style={styles.info}>
-               {who.name ? who.location + ' - ' + who.title : ' '}
-              </Text>
-              <Text style={styles.info}>
-               {who.blurb}
-              </Text>
-              <Image
-               source={{uri: who.image}}
-               style={[styles.portrait, {height: portraitSize, width: portraitSize}]}
-              />
-            </View>
-            <View style={[styles.card, {width: cardWidth}]}>
-              <Text style={styles.info}>
-               {who.name}
-              </Text>
-              <Text style={styles.info}>
-               {who.name ? who.location + ' - ' + who.title : ' '}
-              </Text>
-              <Text style={styles.info}>
-               {who.blurb}
-              </Text>
-              <Image
-               source={{uri: who.image}}
-               style={[styles.portrait, {height: portraitSize, width: portraitSize}]}
-              />
-            </View>
+        <View style={[styles.carousel, {width: cardWidth}]}>
+          <Carousel width={cardWidth} hideIndicators={whoList.length < 2}>{
+            whoList.map((who, index) => {
+              return (
+                <View key={index} style={[styles.card, {width: cardWidth}]}>
+                  {who.name ? <Text style={styles.info}> {who.name} </Text> : null}
+                  {who.name ? <Text style={styles.info}> {who.location + ' - ' + who.title} </Text> : null}
+                  {who.blurb ? <Text style={styles.info}> {who.blurb} </Text> : null}
+                  <Image
+                   source={{uri: who.image}}
+                   style={[styles.portrait, {height: portraitSize, width: portraitSize}]}
+                  />
+                </View>
+              );
+            })}
           </Carousel>
         </View>
       </View>

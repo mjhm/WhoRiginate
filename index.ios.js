@@ -19,9 +19,6 @@ var {
   PixelRatio
 } = React;
 
-console.log('pixelRatio', PixelRatio.get());
-
-
 // This is used by people without an image.
 var defaultImage1 = ['https://originate-v3-prod.s3.amazonaws.com/sites/',
   '53854785dc60d94b96000002/theme/images/people-default.jpg'].join('');
@@ -52,7 +49,7 @@ var WhoRiginate = React.createClass({
 
   scrapePeople: function (pageText, processPeople) {
     var $ = cheerio.load(pageText);
-    var people = [defaultPerson];
+    var people = [];
     $('.person').each(function () {
       var name = $(this).find('.details .name').text().trim();
       var titleLocation = $(this).find('.details .title').text().trim();
@@ -81,34 +78,35 @@ var WhoRiginate = React.createClass({
     }
     this.people = people;
     this.nameList = _.pluck(people, 'name');
+    this.fuzzyIndex = people.map(function (p) {
+      return p.name;
+    });
     this.locationList = _(people).pluck('location').unique().value();
     this.titleList = _(people).pluck('title').unique().value();
     this.setState({isScraping: false});
-
-    console.log('nameList', this.nameList);
-    console.log('locationList', this.locationList);
-    console.log('titleList', this.titleList);
   },
 
   searchChangeHandler: function (text) {
     var options = { pre: '<', post: '>' };
-    var filterResult = fuzzy.filter(text, this.nameList, options);
-    console.log('results', filterResult);
+    var fuzzyResult = fuzzy.filter(text, this.fuzzyIndex, options);
+    var filteredPeople = fuzzyResult.map((fuzzyItem) => {
+      return this.people[fuzzyItem.index];
+    });
+
     this.setState({
       searchStr: text,
-      currentPerson: this.people[(filterResult[0] || {}).index || 0]
+      filteredPeople: filteredPeople
     });
   },
 
   getInitialState: function () {
     var dim = Dimensions.get('window');
-    console.log('Dimensions', dim);
     return {
       width: dim.width,
       height: dim.height,
       isScraping: true,
       searchStr: '',
-      currentPerson: defaultPerson
+      filteredPeople: []
     };
   },
 
@@ -126,7 +124,7 @@ var WhoRiginate = React.createClass({
   },
   render: function() {
     return (
-      <WhoRiginateView {...this.state}
+      <WhoRiginateView {...this.state} defaultPerson={defaultPerson}
         searchChangeHandler={this.searchChangeHandler}
       />
     );
