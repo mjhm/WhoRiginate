@@ -6,6 +6,7 @@
 'use strict';
 
 var React = require('react-native');
+var StyleSheetRegistry = require('StyleSheetRegistry');
 var _ = require('lodash');
 var Carousel = require('./carousel');
 
@@ -16,6 +17,7 @@ var {
   Text,
   TextInput,
   View,
+  ScrollView,
   PropTypes
 } = React;
 // jshint +W079
@@ -49,14 +51,25 @@ var styles = StyleSheet.create({
     margin: 10,
     padding: 7
   },
+
+  scrollView: {
+    flex: 1,
+    backgroundColor: '#6A85B1',
+    height: 300,
+  },
+  horizontalScrollView: {
+    height: 120,
+  },
   carousel: {
-    flex: 1, alignItems: 'flex-start', overflow: 'hidden',
+    flex: 1,
   },
   card: {
     flex: 1,
     flexDirection: 'column',
     alignItems: 'center',
-    justifyContent: 'space-around'
+    justifyContent: 'space-around',
+    marginTop: 20,
+    marginBottom: 20
   },
   info: {
     textAlign: 'center',
@@ -84,8 +97,12 @@ var WhoRiginateView = React.createClass({
     searchChangeHandler: PropTypes.func.isRequired
   },
 
+
+
   render: function() {
     var cardWidth = this.props.width - 20;
+    var cardHeight = Math.max(this.props.height - 120, 440);
+    console.log('cardHeight', cardHeight);
     var portraitSize = Math.min(this.props.height - 260, cardWidth);
     var whoList = (0 < this.props.filteredPeople.length && this.props.filteredPeople.length < 20) ?
       this.props.filteredPeople : [this.props.defaultPerson];
@@ -102,11 +119,16 @@ var WhoRiginateView = React.createClass({
           onChangeText={_.debounce(this.props.searchChangeHandler, 400)}
           controlled={true}
         />
-        <View style={[styles.carousel, {width: cardWidth}]}>
-          <Carousel width={cardWidth} hideIndicators={whoList.length < 2}>{
+
+        <ScrollView
+          horizontal={true}
+          pagingEnabled={true}
+          style={[styles.scrollView, styles.horizontalScrollView,
+            {width: cardWidth, height: cardHeight}]}>
+          {
             whoList.map((who, index) => {
               return (
-                <View key={index} style={[styles.card, {width: cardWidth}]}>
+                <View key={index} style={[styles.card, {width: cardWidth, height: cardHeight}]}>
                   {who.name ? <Text style={styles.info}> {who.name} </Text> : null}
                   {who.name ? <Text style={styles.info}> {who.location + ' - ' + who.title} </Text> : null}
                   {who.blurb ? <Text style={styles.info}> {who.blurb} </Text> : null}
@@ -116,12 +138,53 @@ var WhoRiginateView = React.createClass({
                   />
                 </View>
               );
-            })}
-          </Carousel>
-        </View>
+            })
+          }
+        </ScrollView>
       </View>
     );
   }
+
+
+  // render: function() {
+  //   var cardWidth = this.props.width - 20;
+  //   var portraitSize = Math.min(this.props.height - 260, cardWidth);
+  //   var whoList = (0 < this.props.filteredPeople.length && this.props.filteredPeople.length < 20) ?
+  //     this.props.filteredPeople : [this.props.defaultPerson];
+  //   return (
+  //     <View style={[styles.container, {width: this.props.width}]}>
+  //       <Text style={styles.headline}>
+  //         WhoRiginate
+  //       </Text>
+  //       <TextInput
+  //         style={styles.searchInput}
+  //         editable={!this.props.isScraping}
+  //         placeholder={this.props.isScraping ? '' : 'Search by name'}
+  //         placeholderTextColor='#777'
+  //         onChangeText={_.debounce(this.props.searchChangeHandler, 400)}
+  //         controlled={true}
+  //       />
+  //       <View style={[styles.carousel, {width: cardWidth}]}>
+  //         <Carousel width={cardWidth} hideIndicators={whoList.length < 2}>{
+  //           whoList.map((who, index) => {
+  //             return (
+  //               <View key={index} style={[styles.card, {width: cardWidth}]}>
+  //                 {who.name ? <Text style={styles.info}> {who.name} </Text> : null}
+  //                 {who.name ? <Text style={styles.info}> {who.location + ' - ' + who.title} </Text> : null}
+  //                 {who.blurb ? <Text style={styles.info}> {who.blurb} </Text> : null}
+  //                 <Image
+  //                  source={{uri: who.image}}
+  //                  style={[styles.portrait, {height: portraitSize, width: portraitSize}]}
+  //                 />
+  //               </View>
+  //             );
+  //           })}
+  //         </Carousel>
+  //       </View>
+  //     </View>
+  //   );
+  // }
+
 });
 
 module.exports = WhoRiginateView;
