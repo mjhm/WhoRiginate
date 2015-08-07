@@ -101,6 +101,7 @@ var WhoRiginate = React.createClass({
 
   getInitialState: function () {
     var dim = Dimensions.get('window');
+    console.log('dimensions', dim);
     return {
       width: dim.width,
       height: dim.height,
